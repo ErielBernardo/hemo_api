@@ -14,7 +14,7 @@ app = FastAPI()
 
 # var_mongopass = os.getenv('admin')
 var_mongopass = 'admin'
-var_url = f"mongodb+srv://admin: {var_mongopass}@cluster0.3g8z5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+var_url = f"mongodb+srv://admin:{var_mongopass}@cluster0.3g8z5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 client = MongoClient(var_url)
 # db = client.test
 mydb = client['test-db']
