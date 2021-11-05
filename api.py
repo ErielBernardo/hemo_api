@@ -2,6 +2,7 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from html import parser
 
 from fastapi import FastAPI, Path
 from pymongo import MongoClient
@@ -9,6 +10,7 @@ from typing import Optional, Union
 from pydantic import BaseModel
 import os
 from datetime import datetime as dt
+from dateutil import parser
 
 app = FastAPI()
 
@@ -17,8 +19,8 @@ var_mongopass = 'admin'
 var_url = f"mongodb+srv://admin:{var_mongopass}@cluster0.3g8z5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 client = MongoClient(var_url)
 # db = client.test
-mydb = client['test-db']
-mycol = mydb['mytable']
+mydb = client['tests-db']
+mycol = mydb['test1']
 
 @app.get("/")
 def read_root():
@@ -27,6 +29,11 @@ def read_root():
 
 @app.post("/Insert_TEMP/{TEMP}")
 def insert_temp(TEMP: float, Data: Union[str, dt]=dt.now()):
+    if isinstance(Data, str):
+        try:
+            Data = parser.parse(Data)
+        except:
+            pass
     record_dict = dict()
     record_dict ={
         "Temperature": TEMP,
@@ -35,7 +42,20 @@ def insert_temp(TEMP: float, Data: Union[str, dt]=dt.now()):
     mydb.mycol.insert_one(record_dict)
     return "Success"
 
-
+@app.post("/Insert_TEMP/{TEMP}/{Data}")
+def insert_temp_date(TEMP: float, Data: Union[str, dt]=dt.now()):
+    if isinstance(Data, str):
+        try:
+            Data = parser.parse(Data)
+        except:
+            pass
+    record_dict = dict()
+    record_dict ={
+        "Temperature": TEMP,
+        "Timestamp": Data
+    }
+    mydb.mycol.insert_one(record_dict)
+    return "Success"
 
 
 def print_hi(name):
