@@ -1,0 +1,16 @@
+fastapi
+pymongo
+typing-extensions
+uvicorn
+gunicorn
+
+anyio
+asgiref
+click
+colorama
+dnspython
+h11
+idna
+pydantic
+sniffio
+starlette
