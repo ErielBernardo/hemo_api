@@ -1,5 +1,5 @@
+gunicorn
+uvicorn
 fastapi
 pymongo
 typing-extensions
-uvicorn
-gunicorn
