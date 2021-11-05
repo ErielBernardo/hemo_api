@@ -27,7 +27,7 @@ def read_root():
     return {"Hellow": "New world"}
 
 
-@app.post("/Insert_TEMP/{TEMP}")
+@app.post("/Insert_TEMP/")
 def insert_temp(TEMP: float, Data: Union[str, dt]=dt.now()):
     if isinstance(Data, str):
         try:
