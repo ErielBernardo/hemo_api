@@ -1,9 +1,5 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 from html import parser
-
 from fastapi import FastAPI, Path
 from pymongo import MongoClient
 from typing import Optional, Union
@@ -43,6 +39,7 @@ async def insert_temp(TEMP: float, Data: Union[str, dt] = dt.now(), mod_id: Opti
     }
     mycol.insert_one(record_dict)
     return "Success"
+
 
 @app.get("/read_mod/{mod_id}")
 async def read_mod(mod_id: int) -> object:
