@@ -19,8 +19,9 @@ var_mongopass = 'admin'
 var_url = f"mongodb+srv://admin:{var_mongopass}@cluster0.3g8z5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 client = MongoClient(var_url)
 # db = client.test
-mydb = client['tests-db']
-mycol = mydb['test1']
+mydb = client['HemoDB']
+mycol = mydb['Temperatures']
+
 
 @app.get("/")
 def read_root():
@@ -28,29 +29,36 @@ def read_root():
 
 
 @app.post("/Insert_TEMP/")
-def insert_temp(TEMP: float, Data: Union[str, dt]=dt.now()):
+async def insert_temp(TEMP: float, Data: Union[str, dt] = dt.now(), mod_id: Optional[int] = None) -> str:
     if isinstance(Data, str):
         try:
             Data = parser.parse(Data)
         except:
             pass
     record_dict = dict()
-    record_dict ={
+    record_dict = {
+        "mod_id": mod_id,
         "Temperature": TEMP,
         "Timestamp": Data
     }
-    mydb.mycol.insert_one(record_dict)
+    mycol.insert_one(record_dict)
     return "Success"
 
+@app.get("/read_mod/{mod_id}")
+async def read_mod(mod_id: int) -> object:
+    mod_data = mycol.find({"mod_id": mod_id})
+    return mod_data
+
+
 @app.post("/Insert_TEMP/{TEMP}/{Data}")
-def insert_temp_date(TEMP: float, Data: Union[str, dt]=dt.now()):
+def insert_temp_date(TEMP: float, Data: Union[str, dt] = dt.now()) -> str:
     if isinstance(Data, str):
         try:
             Data = parser.parse(Data)
         except:
             pass
     record_dict = dict()
-    record_dict ={
+    record_dict = {
         "Temperature": TEMP,
         "Timestamp": Data
     }
