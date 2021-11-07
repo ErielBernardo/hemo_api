@@ -43,7 +43,9 @@ async def insert_temp(temp: float, data: Union[str, dt] = dt.now(), mod_id: Opti
 
 @app.get("/read_mod/{mod_id}")
 async def read_mod(mod_id: int) -> object:
-    mod_data = mycol.find({"mod_id": mod_id})
+    mod_data = {}
+    for x in mycol.find({}, {"mod_id": mod_id}):
+        mod_data[x['Timestamp']] = {"Temperature": x["Temperature"]}
     return mod_data
 
 
