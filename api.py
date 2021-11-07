@@ -25,17 +25,17 @@ def read_root():
 
 
 @app.post("/Insert_TEMP/")
-async def insert_temp(TEMP: float, Data: Union[str, dt] = dt.now(), mod_id: Optional[int] = None) -> bool:
-    if isinstance(Data, str):
+async def insert_temp(temp: float, data: Union[str, dt] = dt.now(), mod_id: Optional[int] = None) -> bool:
+    if isinstance(data, str):
         try:
-            Data = parser.parse(Data)
-        except:
+            data = parser.parse(data)
+        except Exception as e:
             pass
     record_dict = dict()
     record_dict = {
         "mod_id": mod_id,
-        "Temperature": TEMP,
-        "Timestamp": Data
+        "Temperature": temp,
+        "Timestamp": data
     }
     mycol.insert_one(record_dict)
     return True
@@ -48,18 +48,18 @@ async def read_mod(mod_id: int) -> object:
 
 
 @app.post("/Insert_TEMP/{TEMP}/{Data}")
-def insert_temp_date(TEMP: float, Data: Union[str, dt] = dt.now()) -> bool:
-    if isinstance(Data, str):
+def insert_temp_date(temp: float, data: Union[str, dt] = dt.now()) -> bool:
+    if isinstance(data, str):
         try:
-            Data = parser.parse(Data)
-        except:
+            data = parser.parse(data)
+        except Exception as e:
             pass
     record_dict = dict()
     record_dict = {
-        "Temperature": TEMP,
-        "Timestamp": Data
+        "Temperature": temp,
+        "Timestamp": data
     }
-    mydb.mycol.insert_one(record_dict)
+    mycol.insert_one(record_dict)
     return True
 
 
