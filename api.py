@@ -14,7 +14,7 @@ app = FastAPI()
 var_mongopass = 'admin'
 var_url = f"mongodb+srv://admin:{var_mongopass}@cluster0.3g8z5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 client = MongoClient(var_url)
-# db = client.test
+db = client.test
 mydb = client['HemoDB']
 mycol = mydb['Temperatures']
 
@@ -25,7 +25,7 @@ def read_root():
 
 
 @app.post("/Insert_TEMP/")
-async def insert_temp(TEMP: float, Data: Union[str, dt] = dt.now(), mod_id: Optional[int] = None) -> str:
+async def insert_temp(TEMP: float, Data: Union[str, dt] = dt.now(), mod_id: Optional[int] = None) -> bool:
     if isinstance(Data, str):
         try:
             Data = parser.parse(Data)
@@ -38,7 +38,7 @@ async def insert_temp(TEMP: float, Data: Union[str, dt] = dt.now(), mod_id: Opti
         "Timestamp": Data
     }
     mycol.insert_one(record_dict)
-    return "Success"
+    return True
 
 
 @app.get("/read_mod/{mod_id}")
@@ -48,7 +48,7 @@ async def read_mod(mod_id: int) -> object:
 
 
 @app.post("/Insert_TEMP/{TEMP}/{Data}")
-def insert_temp_date(TEMP: float, Data: Union[str, dt] = dt.now()) -> str:
+def insert_temp_date(TEMP: float, Data: Union[str, dt] = dt.now()) -> bool:
     if isinstance(Data, str):
         try:
             Data = parser.parse(Data)
@@ -60,7 +60,7 @@ def insert_temp_date(TEMP: float, Data: Union[str, dt] = dt.now()) -> str:
         "Timestamp": Data
     }
     mydb.mycol.insert_one(record_dict)
-    return "Success"
+    return True
 
 
 def print_hi(name):
