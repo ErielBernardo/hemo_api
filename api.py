@@ -10,9 +10,12 @@ from dateutil import parser
 
 app = FastAPI()
 
-var_mongopass = os.getenv('admin')
-#var_mongopass = 'admin'
-var_url = f"mongodb+srv://admin:{var_mongopass}@cluster0.3g8z5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+db_password = os.getenv('db_password')
+db_login = os.getenv('db_login')
+# db_password = 'admin'
+# db_login = 'admin'
+
+var_url = f"mongodb+srv://{db_login}:{db_password}@cluster0.3g8z5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 client = MongoClient(var_url)
 db = client.test
 mydb = client['HemoDB']
