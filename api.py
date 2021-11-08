@@ -5,7 +5,9 @@ from pymongo import MongoClient
 from typing import Optional, Union
 from pydantic import BaseModel
 import os
-from datetime import datetime as dt
+from datetime import datetime as dt, datetime
+from datetime import tzinfo, timezone
+import pytz
 from dateutil import parser
 
 app = FastAPI()
@@ -53,7 +55,7 @@ async def read_mod(mod_id: int) -> object:
 
 
 @app.post("/Insert_TEMP/{TEMP}/{Data}")
-def insert_temp_date(temp: float, data: Union[str, dt] = dt.now()) -> bool:
+def insert_temp_date(temp: float, data: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
     if isinstance(data, str):
         try:
             data = parser.parse(data)
