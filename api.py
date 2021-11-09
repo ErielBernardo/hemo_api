@@ -61,6 +61,7 @@ def insert_temp_date(temp: float, data: Union[str, dt] = dt.now(tz=pytz.timezone
             data = parser.parse(data)
         except Exception as e:
             pass
+    app.trace(str(data))
     print(data)
     record_dict = dict()
     record_dict = {
