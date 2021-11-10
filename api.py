@@ -39,6 +39,10 @@ async def insert_temp(temp: float, data: Union[str, dt] = dt.now(), mod_id: Opti
             data = parser.parse(data)
         except Exception as e:
             pass
+
+    print(data)
+    logger.debug(str(data))
+
     record_dict = dict()
     record_dict = {
         "mod_id": mod_id,
@@ -64,8 +68,10 @@ def insert_temp_date(temp: float, data: Union[str, dt] = dt.now(tz=pytz.timezone
             data = parser.parse(data)
         except Exception as e:
             pass
+
     print(data)
     logger.debug(str(data))
+
     record_dict = dict()
     record_dict = {
         "Temperature": temp,
