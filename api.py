@@ -9,8 +9,10 @@ from datetime import datetime as dt, datetime
 from datetime import tzinfo, timezone
 import pytz
 from dateutil import parser
+import sys
 
 app = FastAPI()
+app.config['DEBUG'] = True
 
 db_password = os.getenv('db_password')
 db_login = os.getenv('db_login')
@@ -61,7 +63,6 @@ def insert_temp_date(temp: float, data: Union[str, dt] = dt.now(tz=pytz.timezone
             data = parser.parse(data)
         except Exception as e:
             pass
-    app.trace(str(data))
     print(data)
     record_dict = dict()
     record_dict = {
