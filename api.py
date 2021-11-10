@@ -10,9 +10,9 @@ from datetime import tzinfo, timezone
 import pytz
 from dateutil import parser
 import sys
+import logging
 
 app = FastAPI()
-app.config['DEBUG'] = True
 
 db_password = os.getenv('db_password')
 db_login = os.getenv('db_login')
@@ -25,6 +25,7 @@ db = client.test
 mydb = client['HemoDB']
 mycol = mydb['Temperatures']
 
+logger = logging.getLogger('foo-logger')
 
 @app.get("/")
 def read_root():
@@ -64,6 +65,7 @@ def insert_temp_date(temp: float, data: Union[str, dt] = dt.now(tz=pytz.timezone
         except Exception as e:
             pass
     print(data)
+    logger.debug(str(data))
     record_dict = dict()
     record_dict = {
         "Temperature": temp,
