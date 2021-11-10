@@ -33,7 +33,7 @@ def read_root():
 
 
 @app.post("/Insert_TEMP/")
-async def insert_temp(temp: float, data: Union[str, dt] = dt.now(), mod_id: Optional[int] = None) -> bool:
+async def insert_temp(temp: float, data: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')), mod_id: Optional[int] = None) -> bool:
     if isinstance(data, str):
         try:
             data = parser.parse(data)
