@@ -33,21 +33,21 @@ def read_root():
 
 
 @app.post("/Insert_TEMP/")
-async def insert_temp(temp: float, data: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')), mod_id: Optional[int] = None) -> bool:
-    if isinstance(data, str):
+async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')), mod_id: Optional[int] = None) -> bool:
+    if isinstance(timestamp, str):
         try:
-            data = parser.parse(data)
+            timestamp = parser.parse(timestamp)
         except Exception as e:
             pass
 
-    print(data)
-    logger.debug(str(data))
+    print(timestamp)
+    logger.debug(str(timestamp))
 
     record_dict = dict()
     record_dict = {
         "mod_id": mod_id,
         "Temperature": temp,
-        "Timestamp": data
+        "Timestamp": timestamp
     }
     mycol.insert_one(record_dict)
     return True
@@ -61,21 +61,21 @@ async def read_mod(mod_id: int) -> object:
     return mod_data
 
 
-@app.post("/Insert_TEMP/{TEMP}/{Data}")
-def insert_temp_date(temp: float, data: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
-    if isinstance(data, str):
+@app.post("/Insert_TEMP/{TEMP}/{timestamp}")
+def insert_temp_date(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
+    if isinstance(timestamp, str):
         try:
-            data = parser.parse(data)
+            timestamp = parser.parse(timestamp)
         except Exception as e:
             pass
 
-    print(data)
-    logger.debug(str(data))
+    print(timestamp)
+    logger.debug(str(timestamp))
 
     record_dict = dict()
     record_dict = {
         "Temperature": temp,
-        "Timestamp": data
+        "Timestamp": timestamp
     }
     mycol.insert_one(record_dict)
     return True
