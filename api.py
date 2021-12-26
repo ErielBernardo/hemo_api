@@ -33,7 +33,7 @@ def read_root():
 
 
 @app.post("/Insert_TEMP/")
-async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')), mod_id: Optional[int] = None) -> bool:
+async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')), mod_id: Optional[int] = None, ldr: int) -> bool:
     if isinstance(timestamp, str):
         try:
             timestamp = parser.parse(timestamp)
@@ -47,7 +47,8 @@ async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.ti
     record_dict = {
         "mod_id": mod_id,
         "Temperature": temp,
-        "Timestamp": timestamp
+        "Timestamp": timestamp,
+        "LDR": ldr
     }
     mycol.insert_one(record_dict)
     return True
