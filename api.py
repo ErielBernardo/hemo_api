@@ -11,6 +11,7 @@ import logging
 from datetime import tzinfo, timezone
 import sys
 from pydantic import BaseModel
+from uvicorn import logging
 
 description = """HemoApp API helps hospitals to control and monitor blood components. 🚀"""
 app = FastAPI(title="HemoApp",
@@ -76,7 +77,7 @@ async def insert_temp_test(ambient_temp: float, storage_temp: float,
             pass
 
     print(timestamp)
-    logger.warning(str(timestamp), str(storage_temp))
+    logger.debug(str(timestamp), str(storage_temp))
 
     record_dict = dict()
     record_dict = {
