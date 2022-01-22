@@ -86,7 +86,7 @@ async def insert_temp_test(ambient_temp: float, storage_temp: float,
         "Timestamp": timestamp,
         "LDRStatus": ldr
     }
-    mycol.insert_one(record_dict)
+    mycol_teste.insert_one(record_dict)
     return True
 
 
