@@ -3,16 +3,24 @@ from html import parser
 from fastapi import FastAPI, Path
 from pymongo import MongoClient
 from typing import Optional, Union
-from pydantic import BaseModel
 import os
-from datetime import datetime as dt, datetime
-from datetime import tzinfo, timezone
+from datetime import datetime as dt
 import pytz
 from dateutil import parser
-import sys
 import logging
+from datetime import tzinfo, timezone
+import sys
+from pydantic import BaseModel
 
-app = FastAPI()
+description = """HemoApp API helps hospitals to control and monitor blood components. 🚀"""
+app = FastAPI(title="HemoApp",
+              description=description,
+              version="0.0.1",
+              contact={
+                  "name": "Eriel Bernardo Albino",
+                  "url": "https://www.linkedin.com/in/erielbernardo/",
+                  "email": "erielberrnardo@gmail.com",
+              },)
 
 db_password = os.getenv('db_password')
 db_login = os.getenv('db_login')
@@ -24,16 +32,19 @@ client = MongoClient(var_url)
 db = client.test
 mydb = client['HemoDB']
 mycol = mydb['Temperatures']
+mycol_teste = mydb['TemperaturesTest']
 
 logger = logging.getLogger('foo-logger')
 
+
 @app.get("/")
-def read_root():
+async def read_root():
     return {"Hellow": "New world"}
 
 
 @app.post("/Insert_TEMP/")
-async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')), mod_id: Optional[int] = None, ldr: Optional[int] = None) -> bool:
+async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')),
+                      mod_id: Optional[int] = None, ldr: Optional[int] = None) -> bool:
     if isinstance(timestamp, str):
         try:
             timestamp = parser.parse(timestamp)
@@ -45,10 +56,35 @@ async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.ti
 
     record_dict = dict()
     record_dict = {
-        "mod_id": mod_id,
+        "ModuleID": mod_id,
         "Temperature": temp,
         "Timestamp": timestamp,
         "LDR": ldr
+    }
+    mycol.insert_one(record_dict)
+    return True
+
+
+@app.post("/Insert_TEMP_TEST/")
+async def insert_temp_test(ambient_temp: float, storage_temp: float,
+                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')),
+                           mod_id: Optional[int] = None, ldr: Optional[int] = None) -> bool:
+    if isinstance(timestamp, str):
+        try:
+            timestamp = parser.parse(timestamp)
+        except Exception as e:
+            pass
+
+    print(timestamp)
+    logger.warning(str(timestamp), str(storage_temp))
+
+    record_dict = dict()
+    record_dict = {
+        "ModuleID": mod_id,
+        "AmbientTemperature": ambient_temp,
+        "StorageTemperature": storage_temp,
+        "Timestamp": timestamp,
+        "LDRStatus": ldr
     }
     mycol.insert_one(record_dict)
     return True
@@ -58,7 +94,7 @@ async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.ti
 async def read_mod(mod_id: int) -> object:
     mod_data = {}
     for x in mycol.find({"mod_id": mod_id}):
-        mod_data[x['Timestamp']] = {"Temperature": x["Temperature"], "mod_id": x["mod_id"] }
+        mod_data[x['Timestamp']] = {"Temperature": x["Temperature"], "mod_id": x["mod_id"]}
     return mod_data
 
 
@@ -83,12 +119,8 @@ def insert_temp_date(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.tim
 
 
 def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
