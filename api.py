@@ -53,7 +53,7 @@ async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Op
 @app.post("/Insert_TEMP_TEST/")
 async def insert_temp_test(ambient_temp: float, storage_temp: float, ldr: Optional[int] = None,
                            mod_id: Optional[int] = None,
-                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> object:
+                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
     if isinstance(timestamp, str):
         try:
             timestamp = parser.parse(timestamp)
@@ -71,7 +71,8 @@ async def insert_temp_test(ambient_temp: float, storage_temp: float, ldr: Option
         "LDRStatus": ldr
     }
     await insert_db_temp_test(record_dict)
-    return record_dict
+    print("Inserted")
+    return True
 
 
 @app.get("/read_mod/{mod_id}")
