@@ -75,8 +75,8 @@ async def insert_temp_test(ambient_temp: float, storage_temp: float,
         except Exception as e:
             pass
 
-    print(timestamp)
-    logger.debug(str(timestamp), str(storage_temp))
+    print(f"Timestamp {timestamp}, Refrigerdaor {storage_temp}, Ambiente {ambient_temp}")
+    logger.debug(f"Timestamp {timestamp}, Refrigerdaor {storage_temp}")
 
     record_dict = dict()
     record_dict = {
