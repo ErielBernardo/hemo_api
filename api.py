@@ -31,7 +31,7 @@ async def read_root():
 
 @app.post("/Insert_TEMP/")
 async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Optional[int] = None,
-                      timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> dict:
+                      timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> object:
     if isinstance(timestamp, str):
         try:
             timestamp = parser.parse(timestamp)
@@ -51,9 +51,9 @@ async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Op
 
 
 @app.post("/Insert_TEMP_TEST/")
-async def insert_temp_test(ambient_temp: float, storage_temp: float, mod_id: Optional[int] = None,
-                           ldr: Optional[int] = None,
-                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> dict:
+async def insert_temp_test(ambient_temp: float, storage_temp: float, ldr: Optional[int] = None,
+                           mod_id: Optional[int] = None,
+                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> object:
     if isinstance(timestamp, str):
         try:
             timestamp = parser.parse(timestamp)
