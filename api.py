@@ -11,7 +11,6 @@ import logging
 from datetime import tzinfo, timezone
 import sys
 from pydantic import BaseModel
-from uvicorn import logging
 
 description = """HemoApp API helps hospitals to control and monitor blood components. 🚀"""
 app = FastAPI(title="HemoApp",
