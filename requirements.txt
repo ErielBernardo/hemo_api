@@ -6,3 +6,4 @@ dnspython
 typing-extensions
 python-dateutil
 pytz
+email-validator

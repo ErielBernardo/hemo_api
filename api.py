@@ -11,10 +11,10 @@ from pydantic import BaseModel
 
 from database import insert_db_temp, insert_db_temp_test, read_db_mod
 
-description = """HemoApp API helps hospitals to control and monitor blood components. 🚀"""
+description = """HemoApp API helps hospitals to control and monitor blood components. 🚀🩸🩸"""
 app = FastAPI(title="HemoApp",
               description=description,
-              version="0.0.1",
+              version="0.0.2",
               contact={
                   "name": "Eriel Bernardo Albino",
                   "url": "https://www.linkedin.com/in/erielbernardo/",
@@ -30,30 +30,30 @@ async def read_root():
 
 
 @app.post("/Insert_TEMP/")
-async def insert_temp(temp: float, timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')),
-                      mod_id: Optional[int] = None, ldr: Optional[int] = None) -> bool:
+async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Optional[int] = None,
+                      timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> dict:
     if isinstance(timestamp, str):
         try:
             timestamp = parser.parse(timestamp)
         except Exception as e:
             pass
 
-    print(f"/Insert_TEMP/ - Timestamp {timestamp}, Refrigerator {temp}°C, LDR {ldr}")
+    print(f"/Insert_TEMP/ - Timestamp {timestamp}, Refrigerator {storage_temp}°C, LDR {ldr}")
 
     record_dict = {
         "ModuleID": mod_id,
-        "Temperature": temp,
+        "Temperature": storage_temp,
         "Timestamp": timestamp,
         "LDR": ldr
     }
     await insert_db_temp(record_dict)
-    return True
+    return record_dict
 
 
 @app.post("/Insert_TEMP_TEST/")
-async def insert_temp_test(ambient_temp: float, storage_temp: float,
-                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')),
-                           mod_id: Optional[int] = None, ldr: Optional[int] = None) -> bool:
+async def insert_temp_test(ambient_temp: float, storage_temp: float, mod_id: Optional[int] = None,
+                           ldr: Optional[int] = None,
+                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> dict:
     if isinstance(timestamp, str):
         try:
             timestamp = parser.parse(timestamp)
@@ -71,7 +71,7 @@ async def insert_temp_test(ambient_temp: float, storage_temp: float,
         "LDRStatus": ldr
     }
     await insert_db_temp_test(record_dict)
-    return True
+    return record_dict
 
 
 @app.get("/read_mod/{mod_id}")
