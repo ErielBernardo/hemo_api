@@ -51,7 +51,32 @@ async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Op
 
 
 @app.post("/Insert_TEMP_TEST/")
-async def insert_temp_test(ambient_temp: float, storage_temp: float, ldr: Optional[int] = None,
+async def insert_temp_test(storage_temp: float, ambient_temp: float, ldr: Optional[int] = None,
+                           mod_id: Optional[int] = None,
+                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
+    if isinstance(timestamp, str):
+        try:
+            timestamp = parser.parse(timestamp)
+        except Exception as e:
+            pass
+
+    print(
+        f"/Insert_TEMP_TEST/ - Timestamp {timestamp}, Refrigerator {storage_temp}°C, Ambient {ambient_temp}°C, LDR {ldr}")
+
+    record_dict = {
+        "ModuleID": mod_id,
+        "AmbientTemperature": ambient_temp,
+        "StorageTemperature": storage_temp,
+        "Timestamp": timestamp,
+        "LDRStatus": ldr
+    }
+    await insert_db_temp_test(record_dict)
+    print("Inserted")
+    return True
+
+
+@app.post("/Insert_TEMP_EVENT/")
+async def insert_temp_test(storage_temp: float, ambient_temp: float, ldr: Optional[int] = None,
                            mod_id: Optional[int] = None,
                            timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
     if isinstance(timestamp, str):
