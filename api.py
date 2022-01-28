@@ -1,15 +1,13 @@
 from fastapi import FastAPI
+from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel
 from typing import Optional, Union
 from datetime import datetime as dt
 import pytz
 from dateutil import parser
 import logging
+from database import insert_db_temp, insert_db_temp_test, insert_db_multi_temp, read_db_mod
 
-from datetime import tzinfo, timezone
-import sys
-from pydantic import BaseModel
-
-from database import insert_db_temp, insert_db_temp_test, read_db_mod
 
 description = """HemoApp API helps hospitals to control and monitor blood components. 🚀🩸🩸"""
 app = FastAPI(title="HemoApp",
@@ -19,9 +17,17 @@ app = FastAPI(title="HemoApp",
                   "name": "Eriel Bernardo Albino",
                   "url": "https://www.linkedin.com/in/erielbernardo/",
                   "email": "erielberrnardo@gmail.com",
-              }, )
+              })
 
 logger = logging.getLogger('foo-logger')
+
+
+class ModuleDataPost(BaseModel):
+    AmbientTemperature: Optional[float] = None
+    StorageTemperature: float
+    LDRStatus: Optional[int] = None
+    ModuleID: Optional[int] = None
+    Timestamp: Union[str, dt]
 
 
 @app.get("/")
@@ -31,7 +37,9 @@ async def read_root():
 
 @app.post("/Insert_TEMP/")
 async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Optional[int] = None,
-                      timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> object:
+                      ambient_temp: float = None,
+                      timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo')),
+                      teste: bool = False) -> object:
     if isinstance(timestamp, str):
         try:
             timestamp = parser.parse(timestamp)
@@ -42,12 +50,42 @@ async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Op
 
     record_dict = {
         "ModuleID": mod_id,
-        "Temperature": storage_temp,
-        "Timestamp": timestamp,
-        "LDR": ldr
+        "AmbientTemperature": ambient_temp,
+        "StorageTemperature": storage_temp,
+        "LDRStatus": ldr,
+        "Timestamp": timestamp
     }
-    await insert_db_temp(record_dict)
+
+    await insert_db_temp(record_dict, teste)
     return record_dict
+
+
+@app.post("/Insert_MULTI_TEMP/")
+async def insert_MULTI_TEMP(data: list[ModuleDataPost], teste: bool = False) -> bool:
+    data = jsonable_encoder(data)
+    record_list = []
+    for document in data:
+        print(document)
+        timestamp = document['Timestamp']
+        if isinstance(timestamp, str):
+            try:
+                timestamp = parser.parse(timestamp)
+            except Exception as e:
+                pass
+        print(
+            f"/Insert_MULTI_TEMP_TEST_MODEL/ - Timestamp {timestamp}, Refrigerator {document['StorageTemperature']}°C, Ambient {document['AmbientTemperature']}°C, LDR {document['LDRStatus']}")
+        record_dict = {
+            "ModuleID": document['ModuleID'],
+            "AmbientTemperature": document['AmbientTemperature'],
+            "StorageTemperature": document['StorageTemperature'],
+            "Timestamp": timestamp,
+            "LDRStatus": document['LDRStatus']
+        }
+        record_list.append(record_dict)
+
+    await insert_db_multi_temp(record_list, teste)
+
+    return True
 
 
 @app.post("/Insert_TEMP_TEST/")
