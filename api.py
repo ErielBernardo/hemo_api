@@ -63,29 +63,16 @@ async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Op
 @app.post("/Insert_MULTI_TEMP/")
 async def insert_multi_temp(data: list[ModuleDataPost], teste: bool = False) -> bool:
     data = jsonable_encoder(data)
-    record_list = []
     for document in data:
-        print(document)
-        timestamp = document['Timestamp']
-        if isinstance(timestamp, str):
+        if isinstance(document['Timestamp'], str):
             try:
                 document['Timestamp'] = parser.parse(document['Timestamp'], tzinfos={None: gettz('America/Sao_Paulo')})
             except Exception as e:
                 pass
-        timestamp = document['Timestamp']
         print(document)
-        print(
-            f"/Insert_MULTI_TEMP_TEST_MODEL/ - Timestamp {timestamp}, Refrigerator {document['StorageTemperature']}°C, Ambient {document['AmbientTemperature']}°C, LDR {document['LDRStatus']}")
-        record_dict = {
-            "AmbientTemperature": document['AmbientTemperature'],
-            "StorageTemperature": document['StorageTemperature'],
-            "LDRStatus": document['LDRStatus'],
-            "Timestamp": timestamp,
-            "ModuleID": document['ModuleID']
-        }
-        record_list.append(record_dict)
+    print(data)
 
-    await insert_db_multi_temp(record_list, teste)
+    await insert_db_multi_temp(data, teste)
 
     return True
 
