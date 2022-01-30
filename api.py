@@ -5,9 +5,9 @@ from typing import Optional, Union
 from datetime import datetime as dt
 import pytz
 from dateutil import parser
+from dateutil.tz import gettz
 import logging
 from database import insert_db_temp, insert_db_temp_test, insert_db_multi_temp, read_db_mod
-
 
 description = """HemoApp API helps hospitals to control and monitor blood components. 🚀🩸🩸"""
 app = FastAPI(title="HemoApp",
@@ -26,8 +26,8 @@ class ModuleDataPost(BaseModel):
     AmbientTemperature: Optional[float] = None
     StorageTemperature: float
     LDRStatus: Optional[int] = None
-    ModuleID: Optional[int] = None
     Timestamp: Union[str, dt]
+    ModuleID: Optional[int] = None
 
 
 @app.get("/")
@@ -49,11 +49,11 @@ async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Op
     print(f"/Insert_TEMP/ - Timestamp {timestamp}, Refrigerator {storage_temp}°C, LDR {ldr}")
 
     record_dict = {
-        "ModuleID": mod_id,
         "AmbientTemperature": ambient_temp,
         "StorageTemperature": storage_temp,
         "LDRStatus": ldr,
-        "Timestamp": timestamp
+        "Timestamp": timestamp,
+        "ModuleID": mod_id
     }
 
     await insert_db_temp(record_dict, teste)
@@ -61,7 +61,7 @@ async def insert_temp(storage_temp: float, ldr: Optional[int] = None, mod_id: Op
 
 
 @app.post("/Insert_MULTI_TEMP/")
-async def insert_MULTI_TEMP(data: list[ModuleDataPost], teste: bool = False) -> bool:
+async def insert_multi_temp(data: list[ModuleDataPost], teste: bool = False) -> bool:
     data = jsonable_encoder(data)
     record_list = []
     for document in data:
@@ -69,17 +69,18 @@ async def insert_MULTI_TEMP(data: list[ModuleDataPost], teste: bool = False) -> 
         timestamp = document['Timestamp']
         if isinstance(timestamp, str):
             try:
-                timestamp = parser.parse(timestamp)
+                timestamp = parser.parse(timestamp, tzinfos={None: gettz('America/Sao_Paulo')})
             except Exception as e:
                 pass
-        print(
-            f"/Insert_MULTI_TEMP_TEST_MODEL/ - Timestamp {timestamp}, Refrigerator {document['StorageTemperature']}°C, Ambient {document['AmbientTemperature']}°C, LDR {document['LDRStatus']}")
+        print(document)
+        print(f"/Insert_MULTI_TEMP_TEST/ - Timestamp {timestamp}, Refrigerator {document.StorageTemperature}°C,",
+              f"Ambient {document.AmbientTemperature}°C, LDR {document.LDRStatus}")
         record_dict = {
-            "ModuleID": document['ModuleID'],
-            "AmbientTemperature": document['AmbientTemperature'],
-            "StorageTemperature": document['StorageTemperature'],
+            "AmbientTemperature": document.AmbientTemperature,
+            "StorageTemperature": document.StorageTemperature,
+            "LDRStatus": document.LDRStatus,
             "Timestamp": timestamp,
-            "LDRStatus": document['LDRStatus']
+            "ModuleID": document.ModuleID
         }
         record_list.append(record_dict)
 
@@ -88,38 +89,13 @@ async def insert_MULTI_TEMP(data: list[ModuleDataPost], teste: bool = False) -> 
     return True
 
 
-@app.post("/Insert_TEMP_TEST/")
-async def insert_temp_test(storage_temp: float, ambient_temp: float, ldr: Optional[int] = None,
-                           mod_id: Optional[int] = None,
-                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
-    if isinstance(timestamp, str):
-        try:
-            timestamp = parser.parse(timestamp)
-        except Exception as e:
-            pass
-
-    print(
-        f"/Insert_TEMP_TEST/ - Timestamp {timestamp}, Refrigerator {storage_temp}°C, Ambient {ambient_temp}°C, LDR {ldr}")
-
-    record_dict = {
-        "ModuleID": mod_id,
-        "AmbientTemperature": ambient_temp,
-        "StorageTemperature": storage_temp,
-        "Timestamp": timestamp,
-        "LDRStatus": ldr
-    }
-    await insert_db_temp_test(record_dict)
-    print("Inserted")
-    return True
-
-
 @app.post("/Insert_TEMP_EVENT/")
-async def insert_temp_test(storage_temp: float, ambient_temp: float, ldr: Optional[int] = None,
-                           mod_id: Optional[int] = None,
-                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
+async def insert_temp_event(storage_temp: float, ambient_temp: float, ldr: Optional[int] = None,
+                            mod_id: Optional[int] = None,
+                            timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
     if isinstance(timestamp, str):
         try:
-            timestamp = parser.parse(timestamp)
+            timestamp = parser.parse(timestamp, tzinfos={None: gettz('America/Sao_Paulo')})
         except Exception as e:
             pass
 
@@ -127,11 +103,11 @@ async def insert_temp_test(storage_temp: float, ambient_temp: float, ldr: Option
         f"/Insert_TEMP_TEST/ - Timestamp {timestamp}, Refrigerator {storage_temp}°C, Ambient {ambient_temp}°C, LDR {ldr}")
 
     record_dict = {
-        "ModuleID": mod_id,
         "AmbientTemperature": ambient_temp,
         "StorageTemperature": storage_temp,
+        "LDRStatus": ldr,
         "Timestamp": timestamp,
-        "LDRStatus": ldr
+        "ModuleID": mod_id
     }
     await insert_db_temp_test(record_dict)
     print("Inserted")
@@ -142,6 +118,31 @@ async def insert_temp_test(storage_temp: float, ambient_temp: float, ldr: Option
 async def read_mod(mod_id: int) -> object:
     mod_data = read_db_mod(mod_id)
     return mod_data
+
+
+@app.post("/Insert_TEMP_TEST/")
+async def insert_temp_test(storage_temp: float, ambient_temp: float, ldr: Optional[int] = None,
+                           mod_id: Optional[int] = None,
+                           timestamp: Union[str, dt] = dt.now(tz=pytz.timezone('America/Sao_Paulo'))) -> bool:
+    if isinstance(timestamp, str):
+        try:
+            timestamp = parser.parse(timestamp, tzinfos={None: gettz('America/Sao_Paulo')})
+        except Exception as e:
+            pass
+
+    print(
+        f"/Insert_TEMP_TEST/ - Timestamp {timestamp}, Refrigerator {storage_temp}°C, Ambient {ambient_temp}°C, LDR {ldr}")
+
+    record_dict = {
+        "AmbientTemperature": ambient_temp,
+        "StorageTemperature": storage_temp,
+        "LDRStatus": ldr,
+        "Timestamp": timestamp,
+        "ModuleID": mod_id
+    }
+    await insert_db_temp_test(record_dict)
+    print("Inserted")
+    return True
 
 
 def print_hi(name):
