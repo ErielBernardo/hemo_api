@@ -73,8 +73,8 @@ async def insert_multi_temp(data: list[ModuleDataPost], teste: bool = False) -> 
             except Exception as e:
                 pass
         print(document)
-        print(f"/Insert_MULTI_TEMP_TEST/ - Timestamp {timestamp}, Refrigerator {document.StorageTemperature}°C,",
-              f"Ambient {document.AmbientTemperature}°C, LDR {document.LDRStatus}")
+        print(
+            f"/Insert_MULTI_TEMP_TEST/ - Timestamp {timestamp}, Refrigerator {document.StorageTemperature}°C, Ambient {document.AmbientTemperature}°C, LDR {document.LDRStatus}")
         record_dict = {
             "AmbientTemperature": document.AmbientTemperature,
             "StorageTemperature": document.StorageTemperature,
