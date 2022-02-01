@@ -26,6 +26,7 @@ class ModuleDataPost(BaseModel):
     AmbientTemperature: Optional[float] = None
     StorageTemperature: float
     LDRStatus: Optional[int] = None
+    ReleStatus: Optional[int] = None
     Timestamp: Union[str, dt]
     ModuleID: Optional[int] = None
 
