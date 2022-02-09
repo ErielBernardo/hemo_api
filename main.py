@@ -1,7 +1,6 @@
 # uvicorn --host 0.0.0.0 app.main:app --reload
 import uvicorn
 from fastapi import FastAPI
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from config import settings
 from api import router
@@ -9,14 +8,10 @@ from api import router
 import logging
 
 description = """HemoApp API helps hospitals to control and monitor blood components. 🚀🩸🩸"""
-app = FastAPI(title="HemoAPI",
-              description=description,
-              version="0.0.2",
-              contact={
-                  "name": "Eriel Bernardo Albino",
-                  "url": "https://www.linkedin.com/in/erielbernardo/",
-                  "email": "erielberrnardo@gmail.com",
-              })
+app = FastAPI(title=settings.APP_NAME,
+              description=settings.DESCRIPTION,
+              version=settings.VERSION,
+              contact=settings.CONTACT)
 
 logger = logging.getLogger(__name__)
 

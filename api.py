@@ -40,10 +40,9 @@ async def shutdown_db_client():
 @router.get("/read_mod/{mod_id}", tags=["Reads"], response_description="List a specific module data",
             response_model=List[ModuleData])
 async def read_mod(mod_id: int, top: int = 1000):
-    if (
-            mod_data := await db['TemperaturesTest'].find({"ModuleID": mod_id}).sort('Timestamp',
-                                                                                     pymongo.DESCENDING).to_list(
-                top)) is not None:
+    if (mod_data := await db['TemperaturesTest'].with_options(
+            codec_options=CodecOptions(tz_aware=True, tzinfo=pytz.timezone('America/Sao_Paulo'))).find(
+            {"ModuleID": mod_id}).sort('Timestamp', pymongo.DESCENDING).to_list(top)) is not None:
         return mod_data
     return HTTPException(status_code=404, detail=f"Module {mod_id} not found")
 
