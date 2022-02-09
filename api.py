@@ -37,18 +37,7 @@ async def shutdown_db_client():
     mongodb_client.close()
 
 
-@router.post("/testjj/", tags=["Test"], response_description="Returns a collection of modules data")
-def testejj(data: Optional[DateRange] = None) -> bool:
-    if data is not None:
-        print(data)
-        data = jsonable_encoder(data)
-        star_date = parser.parse(data['StartDate'], tzinfos={None: gettz('America/Sao_Paulo')})
-        end_date = parser.parse(data['EndDate'], tzinfos={None: gettz('America/Sao_Paulo')})
-        print(star_date, end_date)
-    return True
-
-
-@router.get("/read_mod/{mod_id}", tags=["Reads"], response_description="List a module data",
+@router.get("/read_mod/{mod_id}", tags=["Reads"], response_description="List a specific module data",
             response_model=List[ModuleData])
 async def read_mod(mod_id: int, top: int = 1000):
     if (
@@ -59,7 +48,7 @@ async def read_mod(mod_id: int, top: int = 1000):
     return HTTPException(status_code=404, detail=f"Module {mod_id} not found")
 
 
-@router.post("/read_mods/", tags=["Reads"], response_description="Returns a collection of modules data",
+@router.post("/read_mods/", tags=["Reads"], response_description="Returns a collection of modules data by period",
              response_model=List[ModuleData])
 async def read_mods(data: Optional[DateRange] = None, top: int = 1000):  # request: Request,
     print(data)
@@ -99,7 +88,7 @@ async def insert_temp_test(storage_temp: float, ambient_temp: float, ldr: Option
     return True
 
 
-@router.post("/Insert_TEMP/", tags=["Inserts"])
+@router.post("/Insert_TEMP/", tags=["Inserts"], response_description="Insert an unique read data")
 async def insert_temp(data: ModuleData, teste: bool = False) -> bool:
     data = jsonable_encoder(data)
     if isinstance(data['Timestamp'], str):
@@ -115,7 +104,7 @@ async def insert_temp(data: ModuleData, teste: bool = False) -> bool:
     return True
 
 
-@router.post("/Insert_MULTI_TEMP/", tags=["Inserts"])
+@router.post("/Insert_MULTI_TEMP/", tags=["Inserts"], response_description="Insert multiple read data")
 async def insert_multi_temp(data: list[ModuleData], teste: bool = False) -> bool:
     data = jsonable_encoder(data)
     for document in data:

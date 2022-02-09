@@ -36,7 +36,7 @@ async def read_db_mod(mod_id: Optional[int] = None) -> List:
     if mod_id is None:
         mod_data = mycol_teste.find().to_list(1000)
     else:
-        mod_data = mycol_teste.find({"ModuleID": mod_id}).to_list(length=10) # .sort([({"Timestamp": -1})])
+        mod_data = mycol_teste.find({"ModuleID": mod_id}).to_list(length=10)  # .sort([({"Timestamp": -1})])
 
     return mod_data
 
