@@ -10,7 +10,7 @@ class AppSettings(BaseSettings):
         "url": "https://www.linkedin.com/in/erielbernardo/",
         "email": "erielberrnardo@gmail.com",
     }
-    VERSION: str = "0.1.0"
+    VERSION: str = "0.1.1"
     DEBUG_MODE: bool = True
 
 

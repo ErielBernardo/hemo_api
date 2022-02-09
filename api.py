@@ -1,14 +1,14 @@
 import uvicorn
-from fastapi import APIRouter, HTTPException, Request, Body, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, HTTPException  # , Request, Body, status
+# from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union, List  # , Dict
 
 import pymongo
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from bson.codec_options import CodecOptions
 
-from Model import ModuleData, DateRange
+from Model import ModuleData, DateRange, ModuleDataOld
 from config import settings
 
 from datetime import datetime as dt
@@ -37,16 +37,6 @@ async def shutdown_db_client():
     mongodb_client.close()
 
 
-@router.get("/read_mod/{mod_id}", tags=["Reads"], response_description="List a specific module data",
-            response_model=List[ModuleData])
-async def read_mod(mod_id: int, top: int = 1000):
-    if (mod_data := await db['TemperaturesTest'].with_options(
-            codec_options=CodecOptions(tz_aware=True, tzinfo=pytz.timezone('America/Sao_Paulo'))).find(
-            {"ModuleID": mod_id}).sort('Timestamp', pymongo.DESCENDING).to_list(top)) is not None:
-        return mod_data
-    return HTTPException(status_code=404, detail=f"Module {mod_id} not found")
-
-
 @router.post("/read_mods/", tags=["Reads"], response_description="Returns a collection of modules data by period",
              response_model=List[ModuleData])
 async def read_mods(data: Optional[DateRange] = None, top: int = 1000):  # request: Request,
@@ -63,7 +53,38 @@ async def read_mods(data: Optional[DateRange] = None, top: int = 1000):  # reque
             codec_options=CodecOptions(tz_aware=True, tzinfo=pytz.timezone('America/Sao_Paulo'))).find().sort(
             'Timestamp', pymongo.DESCENDING).to_list(top)
     # mod_data = mod_data.apply(lambda x: parser.parse(x['Timestamp'], tzinfos={None: gettz('America/Sao_Paulo')}))
-    return mod_data
+    if mod_data is not None:
+        return mod_data
+
+    return HTTPException(status_code=404, detail=f"Period not found")
+
+
+@router.get("/read_mod/{mod_id}", tags=["Reads"], response_description="List a specific module data",
+            response_model=List[ModuleData])
+async def read_mod(mod_id: int, top: int = 1000):
+    if (mod_data := await db['TemperaturesTest'].with_options(
+            codec_options=CodecOptions(tz_aware=True, tzinfo=pytz.timezone('America/Sao_Paulo'))).find(
+            {"ModuleID": mod_id}).sort('Timestamp', pymongo.DESCENDING).to_list(top)) is not None:
+        return mod_data
+    return HTTPException(status_code=404, detail=f"Module {mod_id} not found")
+
+
+@router.get("/read_mod_no_tz/{mod_id}", tags=["Reads"],
+            response_description="List a specific module data without timezone", response_model=List[ModuleData])
+async def read_mod_no_tz(mod_id: int, top: int = 1000):
+    if (mod_data := await db['TemperaturesTest'].find({"ModuleID": mod_id}).sort(
+            'Timestamp', pymongo.DESCENDING).to_list(top)) is not None:
+        return mod_data
+    return HTTPException(status_code=404, detail=f"Module {mod_id} not found")
+
+
+@router.get("/read_mod_no_tz_old/{mod_id}", tags=["Reads"],
+            response_description="List a specific module data without timezone OLD", response_model=List[ModuleDataOld])
+async def read_mod_no_tz_old(mod_id: int, top: int = 1000):
+    if (mod_data := await db['Temperatures'].find({"ModuleID": mod_id}).sort('Timestamp', pymongo.DESCENDING).to_list(
+            top)) is not None:
+        return mod_data
+    return HTTPException(status_code=404, detail=f"Module {mod_id} not found")
 
 
 @router.post("/Insert_TEMP_TEST/", tags=["Inserts"])

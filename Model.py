@@ -12,6 +12,15 @@ class ModuleData(BaseModel):
     ModuleID: Optional[int] = None
 
 
+class ModuleDataOld(BaseModel):
+    Temperature: float
+    LDR: Optional[int] = None
+    ReleState: Optional[int] = None
+    Timestamp: dt
+    ModuleID: Optional[int] = None
+    mod_id: Optional[int] = None
+
+
 class DateRange(BaseModel):
     StartDate: str = "2022-02-01 20:00:00"
     EndDate: str = "2022-02-05 20:00:00"
