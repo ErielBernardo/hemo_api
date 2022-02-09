@@ -9,7 +9,7 @@ from api import router
 import logging
 
 description = """HemoApp API helps hospitals to control and monitor blood components. 🚀🩸🩸"""
-app = FastAPI(title="HemoApp",
+app = FastAPI(title="HemoAPI",
               description=description,
               version="0.0.2",
               contact={

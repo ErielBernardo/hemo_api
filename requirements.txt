@@ -1,7 +1,6 @@
 gunicorn
 uvicorn
 fastapi
-pymongo
 dnspython
 typing-extensions
 python-dateutil
@@ -9,3 +8,4 @@ pytz
 email-validator
 pydantic
 motor
+pymongo
