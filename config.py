@@ -2,13 +2,20 @@ from pydantic import BaseSettings
 import os
 
 
-class CommonSettings(BaseSettings):
-    APP_NAME: str = ""
+class AppSettings(BaseSettings):
+    APP_NAME: str = "HemoAPI"
+    DESCRIPTION: str = """HemoApp API helps hospitals to control and monitor blood components. 🚀🩸🩸"""
+    CONTACT: dict = {
+        "name": "Eriel Bernardo Albino",
+        "url": "https://www.linkedin.com/in/erielbernardo/",
+        "email": "erielberrnardo@gmail.com",
+    }
+    VERSION: str = "0.1.0"
     DEBUG_MODE: bool = True
 
 
 class ServerSettings(BaseSettings):
-    HOST: str = "0.0.0.0"
+    HOST: str = "localhost"
     PORT: int = 8000
 
 
@@ -21,7 +28,7 @@ class DatabaseSettings(BaseSettings):
     DB_COLL_TEST: str = "TemperaturesTest"
 
 
-class Settings(CommonSettings, ServerSettings, DatabaseSettings):
+class Settings(AppSettings, ServerSettings, DatabaseSettings):
     pass
 
 
